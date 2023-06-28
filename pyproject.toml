@@ -1,13 +1,28 @@
+[tool.poetry]
+name = "open-source-insights-api"
+version = "0.1.6"
+description = "Library to consume project Open Source Insights Project from Google"
+authors = ["Cristiano Henrique <cristianovisk@gmail.com>"]
+readme = "README.md"
+packages = [{include = "open_source_insights_api"}]
+classifiers = [
+    "Topic :: Internet",
+    "Environment :: Console",
+    "Natural Language :: Portuguese (Brazilian)",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3.10",
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+
+[tool.poetry.urls]
+"Documentação" = "https://github.com/cristianovisk/open_source_insights_api/blob/main/README.md"
+"Código" = "https://github.com/cristianovisk/open_source_insights_api"
+"Bug Tracker" = "https://github.com/cristianovisk/open_source_insights_api/issues"
+
+
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
-
-[project]
-name = "open_source_insights_api"
-authors = [{name = "Cristiano Henrique", email = "cristianovisk@gmail.com"}]
-license = {file = "LICENSE"}
-classifiers = ["License :: OSI Approved :: MIT License"]
-dynamic = ["version", "description"]
-
-[project.urls]
-Home = "https://github.com/cristianovisk/open_source_insights_api"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
