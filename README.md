@@ -5,7 +5,7 @@ This library will consume data from project Google Open Source Insights.
 More information in [deps.dev](https://deps.dev "Website official Open Source Insights").
 
 ```shell
-pip install open_source_insights_api
+pip install open-source-insights-api
 ```
 
 Example use:
