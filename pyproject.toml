@@ -16,7 +16,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-requests = "^2.31.0"
+rich = "^13.4.2"
+httpx = "^0.24.1"
 
 [tool.poetry.urls]
 "Documentação" = "https://github.com/cristianovisk/open_source_insights_api/blob/main/README.md"
