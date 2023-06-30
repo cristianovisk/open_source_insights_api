@@ -374,19 +374,19 @@ class query:
             params = {}
 
         if len(params) != 0:
-            try:
-                async with AsyncClient(base_url=url) as client:
+            async with AsyncClient(base_url=url) as client:
+                try:
                     r = await client.get('/query', params=params, timeout=10)
-            except:
-                return {"error": f"Connection with {url} status invalid", "status_code": r.status_code}
-            
-            if r.status_code == 404:
-                return {"error": f"Connection with {url} status invalid", "status_code": r.status_code}
-            
-            try:
-                r_json = json.loads(r.content)
-            except:
-                return {"error": "JSON returned from API is not serializable", "response": r.content.decode('utf-8')}
+                except:
+                    return {"error": f"Connection with {url} status invalid", "status_code": r.status_code}
+                
+                if r.status_code == 404:
+                    return {"error": f"Connection with {url} status invalid", "status_code": r.status_code}
+                
+                try:
+                    r_json = json.loads(r.content)
+                except:
+                    return {"error": "JSON returned from API is not serializable", "response": r.content.decode('utf-8')}
         else:
             return {"error": "Incomplete parameters"}
         
