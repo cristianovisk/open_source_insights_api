@@ -2,6 +2,7 @@ import httpx as requests
 from httpx import AsyncClient
 import json
 import urllib.parse
+from functools import cache
 
 class query:
     """The Deps.dev Insights API provides information about open source software
@@ -59,6 +60,7 @@ class query:
         
         return flag
 # Functions Syncs
+    @cache
     def GetPackage(self, system_repo, pkg_name):
         """GetPackage returns information about a package, including a list of its
         available versions, with the default version marked if known.
@@ -75,12 +77,12 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable"}
+                return {"error": "JSON returned from API is not serializable probably status 404"}
             
             return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-    
+    @cache
     def GetVersion(self, system_repo, pkg_name, pkg_version):
         """GetVersion returns information about a specific package version, including
         its licenses and any security advisories known to affect it.
@@ -97,12 +99,12 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable"}
+                return {"error": "JSON returned from API is not serializable probably status 404"}
             
             return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-        
+    @cache
     def GetRequirements(self, system_repo, pkg_name, pkg_version):
         """GetRequirements returns the requirements for a given version in a
         system-specific format. Requirements are currently only available for
@@ -122,12 +124,12 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable"}
+                return {"error": "JSON returned from API is not serializable probably status 404"}
             
             return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-        
+    @cache   
     def GetDependencies(self, system_repo, pkg_name, pkg_version):
         """GetDependencies returns a resolved dependency graph for the given package
         version. Dependencies are currently available for Go, npm, Cargo, Maven
@@ -153,12 +155,12 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable"}
+                return {"error": "JSON returned from API is not serializable probably status 404"}
             
             return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-    
+    @cache
     def GetProject(self, repo): # ex github.com/owner/pkg
         """GetProject returns information about projects hosted by GitHub, GitLab, or
         BitBucket, when known to us.
@@ -176,12 +178,12 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable"}
+                return {"error": "JSON returned from API is not serializable probably status 404"}
             
             return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-
+    @cache
     def GetAdvisory(self, advisor_id): # ex GHSA-xxxx-xxxx-xxxx
         """GetAdvisory returns information about security advisories hosted by OSV.
         """
@@ -197,12 +199,12 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable"}
+                return {"error": "JSON returned from API is not serializable probably status 404"}
             
             return r_json
         else:
             return {"error": "Advisor ID no supported", "example": "GHSA-xxxx-xxxx-xxxx"}
-        
+    @cache 
     def Search(self, system_repo=None, pkg_name=None, pkg_version=None, hash_type=None, hash_value=None): # ex GHSA-xxxx-xxxx-xxxx
         """Query returns information about multiple package versions, which can be
         specified by name, content hash, or both.
@@ -239,13 +241,14 @@ class query:
             try:
                 r_json = json.loads(r.content)
             except:
-                return {"error": "JSON returned from API is not serializable", "response": r.content.decode('utf-8')}
+                return {"error": "JSON returned from API is not serializable probably status 404", "response": r.content.decode('utf-8')}
         else:
             return {"error": "Incomplete parameters"}
         
         return r_json
 
 # Fuctions Asyncs
+    @cache
     async def async_GetPackage(self, system_repo, pkg_name):
         """Async method with HTTPX
         GetPackage returns information about a package, including a list of its
@@ -264,11 +267,11 @@ class query:
                 try:
                     r_json = r.json()
                 except:
-                    return {"error": "JSON returned from API is not serializable"}
+                    return {"error": "JSON returned from API is not serializable probably status 404"}
                 return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-    
+    @cache
     async def async_GetVersion(self, system_repo, pkg_name, pkg_version):
         """Async method with HTTPX
         GetVersion returns information about a specific package version, including
@@ -287,12 +290,12 @@ class query:
                 try:
                     r_json = json.loads(r.content)
                 except:
-                    return {"error": "JSON returned from API is not serializable"}
+                    return {"error": "JSON returned from API is not serializable probably status 404"}
                 
                 return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-        
+    @cache
     async def async_GetRequirements(self, system_repo, pkg_name, pkg_version):
         """Async method with HTTPX
         GetRequirements returns the requirements for a given version in a
@@ -314,12 +317,12 @@ class query:
                 try:
                     r_json = json.loads(r.content)
                 except:
-                    return {"error": "JSON returned from API is not serializable"}
+                    return {"error": "JSON returned from API is not serializable probably status 404"}
                 
                 return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-        
+    @cache
     async def async_GetDependencies(self, system_repo, pkg_name, pkg_version):
         """Async method with HTTPX
         GetDependencies returns a resolved dependency graph for the given package
@@ -346,12 +349,12 @@ class query:
                 try:
                     r_json = json.loads(r.content)
                 except:
-                    return {"error": "JSON returned from API is not serializable"}
+                    return {"error": "JSON returned from API is not serializable probably status 404"}
                 
                 return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-    
+    @cache
     async def async_GetProject(self, repo): # ex github.com/owner/pkg
         """Async method with HTTPX
         GetProject returns information about projects hosted by GitHub, GitLab, or
@@ -369,12 +372,12 @@ class query:
                 try:
                     r_json = json.loads(r.content)
                 except:
-                    return {"error": "JSON returned from API is not serializable"}
+                    return {"error": "JSON returned from API is not serializable probably status 404"}
                 
                 return r_json
         else:
             return {"error": "System repository not supported", "supported": self.systems}
-
+    @cache
     async def async_GetAdvisory(self, advisor_id): # ex GHSA-xxxx-xxxx-xxxx
         """Async method with HTTPX
         GetAdvisory returns information about security advisories hosted by OSV.
@@ -393,11 +396,11 @@ class query:
                 try:
                     r_json = json.loads(r.content)
                 except:
-                    return {"error": "JSON returned from API is not serializable"}
+                    return {"error": "JSON returned from API is not serializable probably status 404"}
                 return r_json
         else:
             return {"error": "Advisor ID no supported", "example": "GHSA-xxxx-xxxx-xxxx"}
-        
+    @cache
     async def async_Search(self, system_repo=None, pkg_name=None, pkg_version=None, hash_type=None, hash_value=None): # ex GHSA-xxxx-xxxx-xxxx
         """Query returns information about multiple package versions, which can be
         specified by name, content hash, or both.
@@ -435,7 +438,7 @@ class query:
                 try:
                     r_json = json.loads(r.content)
                 except:
-                    return {"error": "JSON returned from API is not serializable", "response": r.content.decode('utf-8')}
+                    return {"error": "JSON returned from API is not serializable probably status 404", "response": r.content.decode('utf-8')}
         else:
             return {"error": "Incomplete parameters"}
         
