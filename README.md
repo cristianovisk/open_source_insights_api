@@ -1,10 +1,15 @@
+![GitHub top language](https://img.shields.io/github/languages/top/cristianovisk/open_source_insights_api)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/open-source-insights-api)
 ![PyPI - Version](https://img.shields.io/pypi/v/open-source-insights-api)
-![CodeQL](https://github.com/cristianovisk/open_source_insights_api/workflows/CodeQL/badge.svg?branch=main)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/open-source-insights-api)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/cristianovisk/open_source_insights_api/badge)](https://securityscorecards.dev/viewer/?uri=github.com/cristianovisk/open_source_insights_api)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7882/badge)](https://www.bestpractices.dev/projects/7882)
+![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/y/cristianovisk/open_source_insights_api)
 ![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/cristianovisk/open_source_insights_api)
 ![GitHub watchers](https://img.shields.io/github/watchers/cristianovisk/open_source_insights_api)
 ![GitHub User's stars](https://img.shields.io/github/stars/cristianovisk)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/cristianovisk/open_source_insights_api/badge)](https://securityscorecards.dev/viewer/?uri=github.com/cristianovisk/open_source_insights_api)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7882/badge)](https://www.bestpractices.dev/projects/7882)
+![CodeQL](https://github.com/cristianovisk/open_source_insights_api/workflows/CodeQL/badge.svg?branch=main)
+
 
 # Open Source Insights Consume API
 
