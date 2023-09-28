@@ -1,4 +1,5 @@
 ![PyPI - Version](https://img.shields.io/pypi/v/open-source-insights-api)
+![CodeQL](https://github.com/cristianovisk/open_source_insights_api/workflows/CodeQL/badge.svg?branch=main)
 ![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/cristianovisk/open_source_insights_api)
 ![GitHub watchers](https://img.shields.io/github/watchers/cristianovisk/open_source_insights_api)
 ![GitHub User's stars](https://img.shields.io/github/stars/cristianovisk)
