@@ -1,4 +1,5 @@
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/cristianovisk/open_source_insights_api/badge)](https://securityscorecards.dev/viewer/?uri=github.com/cristianovisk/open_source_insights_api)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7882/badge)](https://www.bestpractices.dev/projects/7882)
 # Open Source Insights Consume API
 
 This library will consume data from project Google Open Source Insights. 
