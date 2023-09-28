@@ -10,7 +10,7 @@
 ![GitHub User's stars](https://img.shields.io/github/stars/cristianovisk)
 ![CodeQL](https://github.com/cristianovisk/open_source_insights_api/workflows/CodeQL/badge.svg?branch=main)
 
-
+![Logo](https://deps.dev/static/img/insights-logo-full-dark.efe5263f.svg)
 # Open Source Insights Consume API
 
 This library will consume data from project Google Open Source Insights. 
