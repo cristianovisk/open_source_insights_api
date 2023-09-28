@@ -13,11 +13,14 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3.10",
 ]
+[tool.poetry.scripts]
+sbom_insights = "open_source_insights_api.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 rich = "^13.4.2"
 httpx = "^0.25.0"
+packageurl-python = "^0.11.2"
 
 [tool.poetry.urls]
 "Documentação" = "https://github.com/cristianovisk/open_source_insights_api/blob/main/README.md"

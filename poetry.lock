@@ -148,6 +148,23 @@ files = [
 ]
 
 [[package]]
+name = "packageurl-python"
+version = "0.11.2"
+description = "A purl aka. Package URL parser and builder"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "packageurl-python-0.11.2.tar.gz", hash = "sha256:01fbf74a41ef85cf413f1ede529a1411f658bda66ed22d45d27280ad9ceba471"},
+    {file = "packageurl_python-0.11.2-py3-none-any.whl", hash = "sha256:799acfe8d9e6e3534bbc19660be97d5b66754bc033e62c39f1e2f16323fcfa84"},
+]
+
+[package.extras]
+build = ["wheel"]
+lint = ["black", "isort", "mypy"]
+sqlalchemy = ["sqlalchemy (>=2.0.0)"]
+test = ["pytest"]
+
+[[package]]
 name = "pygments"
 version = "2.15.1"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -193,4 +210,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f9bb0c687051575916d7334e48bf0bca262854b19939354d60137e6f322c0632"
+content-hash = "ab23d3fcccc86f249f4a40e1146afba29548b0a32d23280550efac4c266ef2c0"
