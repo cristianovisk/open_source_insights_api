@@ -1,5 +1,10 @@
+![PyPI - Version](https://img.shields.io/pypi/v/open-source-insights-api)
+![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/cristianovisk/open_source_insights_api)
+![GitHub watchers](https://img.shields.io/github/watchers/cristianovisk/open_source_insights_api)
+![GitHub User's stars](https://img.shields.io/github/stars/cristianovisk)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/cristianovisk/open_source_insights_api/badge)](https://securityscorecards.dev/viewer/?uri=github.com/cristianovisk/open_source_insights_api)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/7882/badge)](https://www.bestpractices.dev/projects/7882)
+
 # Open Source Insights Consume API
 
 This library will consume data from project Google Open Source Insights. 
