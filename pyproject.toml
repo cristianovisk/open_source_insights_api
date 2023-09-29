@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "open-source-insights-api"
-version = "0.1.13"
+version = "0.1.14"
 license = "MIT"
 description = "Library to consume project Open Source Insights Project from Google"
 authors = ["Cristiano Henrique <cristianovisk@gmail.com>"]
@@ -17,10 +17,12 @@ classifiers = [
 sbom_insights = "open_source_insights_api.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 rich = "^13.4.2"
 httpx = "^0.25.0"
 packageurl-python = "^0.11.2"
+pandas = "^2.1.1"
+openpyxl = "^3.1.2"
 
 [tool.poetry.urls]
 "Documentação" = "https://github.com/cristianovisk/open_source_insights_api/blob/main/README.md"

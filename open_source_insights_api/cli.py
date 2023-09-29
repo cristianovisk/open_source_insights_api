@@ -1,10 +1,12 @@
 import argparse
 import json
 import time
-from open_source_insights_api.os_insights import query
-from functools import cache
-from rich.live import Live
+from os_insights import query
 from rich.table import Table
+from rich.progress import Progress
+from rich.console import Console
+import pandas as pd
+import re
 import threading
 from packageurl import PackageURL
 
@@ -24,89 +26,208 @@ class Sbom_Process_CLI:
     def generate_table(self) -> Table:
         """Make a new table."""
         table = Table(title="SBOM Insights")
-        table.add_column("Package")
-        table.add_column("Repository")
-        table.add_column("Version")
-        table.add_column("Latest Version")
-        table.add_column("Dep Direct")
-        table.add_column("Dep Indirect")
-
+        table.add_column(":package: Package")
+        table.add_column(":package: Repository")
+        table.add_column(":right_arrow: Version")
+        table.add_column(":up_arrow: Latest")
+        table.add_column(":gear: Dep Direct")
+        table.add_column(":gear: Dep Indirect")
+        table.add_column(":skull: Vulnerabilities")
+        table.add_column(":light_bulb: OpenSSF Score")
+        table.add_column(":hammer_and_wrench: Maintainability")
+       
         for pkg in self.all_pkgs_info:
+            dep_dir = f"{pkg.get('dep_indir')}"
+            dep_indir = f"{pkg.get('dep_dir')}"
+            maintained = ""
+            if pkg.get('recv_version') != pkg.get('latest'): 
+                latest = f":new: {pkg.get('latest')}"
+            else:
+                latest = f"{pkg.get('latest')}"
+            if pkg.get('vulnerabilities') != 0:
+                vulnerabilities = f":red_circle: {pkg.get('vulnerabilities')}"
+            else:
+                vulnerabilities = f":green_circle: {pkg.get('vulnerabilities')}"
+
+            if pkg.get('maintained') != "":
+                if int(pkg.get('maintained')) == 0:
+                    maintained = f":red_circle: {pkg.get('maintained')}"
+                elif int(pkg.get('maintained')) < 5:
+                    maintained = f":yellow_circle: {pkg.get('maintained')}"
+                elif int(pkg.get('maintained')) < 10:
+                    maintained = f":blue_circle: {pkg.get('maintained')}"
+                elif int(pkg.get('maintained')) == 10:
+                    maintained = f":green_circle: {pkg.get('maintained')}"
+            
+            if pkg.get('dep_dir') <= 30:
+                dep_dir = f":green_circle: {pkg.get('dep_dir')}"
+            elif pkg.get('dep_dir') < 60:
+                dep_dir = f":blue_circle: {pkg.get('dep_dir')}"
+            elif pkg.get('dep_dir') <= 100:
+                dep_dir = f":yellow_circle: {pkg.get('dep_dir')}"
+            elif pkg.get('dep_dir') > 100:
+                dep_dir = f":red_circle: {pkg.get('dep_dir')}"
+
+            if pkg.get('dep_indir') <= 30:
+                dep_indir = f":green_circle: {pkg.get('dep_indir')}"
+            elif pkg.get('dep_indir') < 60:
+                dep_indir = f":blue_circle: {pkg.get('dep_indir')}"
+            elif pkg.get('dep_indir') <= 100:
+                dep_indir = f":yellow_circle: {pkg.get('dep_indir')}"
+            elif pkg.get('dep_indir') > 100:
+                dep_indir = f":red_circle: {pkg.get('dep_indir')}"
+
             table.add_row(
                 f"{pkg.get('pkg_name')}", 
-                f"{pkg.get('system')}", 
+                f"{pkg.get('system')}".upper(), 
                 f"{pkg.get('recv_version')}",
-                f"{pkg.get('latest')}",
-                f"{pkg.get('dep_dir')}",
-                f"{pkg.get('dep_indir')}"
+                f"{latest}",
+                f"{dep_dir}",
+                f"{dep_indir}",
+                f"{vulnerabilities}",
+                f"{pkg.get('openssf_score')}",
+                f"{maintained}"
             )
+        pd.DataFrame(self.all_pkgs_info).to_excel('output.xlsx', sheet_name="SBOM_INSIGHTS", index=False, header=True)
         return table
     
+    def __get_osscore(self, pkg_version_info):
+        repo_url = ""
+        score = ""
+        regex_github = '(github.com\/[a-zA-Z0-9\-]{2,}\/[a-zA-Z0-9\-]{2,})'
+        if pkg_version_info.get('links'):
+            if len(pkg_version_info.get('links')) == 0:
+                return ""
+            else:
+                for link in pkg_version_info.get('links'):
+                    if link.get('label') == 'SOURCE_REPO':
+                        try:
+                            repo_url = re.search(regex_github, link.get('url'))[0]
+                        except:
+                            repo_url = ""
+        if repo_url != "":
+            project_data = self.osi.GetProject(repo_url)
+            if project_data.get('scorecard'):
+                score = project_data.get('scorecard').get('overallScore')
+
+        return score
+    
+    def __get_score_maintained(self, pkg_version_info):
+        repo_url = ""
+        score = ""
+        regex_github = '(github.com\/[a-zA-Z0-9\-]{2,}\/[a-zA-Z0-9\-]{2,})'
+        if pkg_version_info.get('links'):
+            if len(pkg_version_info.get('links')) == 0:
+                return ""
+            else:
+                for link in pkg_version_info.get('links'):
+                    if link.get('label') == 'SOURCE_REPO':
+                        try:
+                            repo_url = re.search(regex_github, link.get('url'))[0]
+                        except:
+                            repo_url = ""
+        if repo_url != "":
+            project_data = self.osi.GetProject(repo_url)
+            if project_data.get('scorecard'):
+                for check in project_data.get('scorecard').get('checks'):
+                    if check.get('name') == "Maintained":
+                        score = check.get('score')
+
+        return score
+            
 
     def __get_latest_version(self, pkg_info_os):
-        for version in pkg_info_os.get('versions'):
-            if version.get('isDefault'):
-                return version.get('versionKey').get('version')
+        if pkg_info_os.get('versions'):
+            for version in pkg_info_os.get('versions'):
+                if version.get('isDefault'):
+                    return version.get('versionKey').get('version')
+    
+    def __get_latest_version_date(self, pkg_info_os):
+        if pkg_info_os.get('versions'):
+            for version in pkg_info_os.get('versions'):
+                if version.get('isDefault'):
+                    return version.get('publishedAt')
               
     def __get_relations_deps(self, pkg_deps_os):
         c_relations = {'direct': 0, 'indirect': 0}
-        for node in pkg_deps_os.get('nodes'):
-            if node.get('relation') == 'DIRECT':
-                c_relations['direct'] += 1
-            if node.get('relation') == 'INDIRECT':
-                c_relations['indirect'] += 1
-        return c_relations
+        if pkg_deps_os.get('nodes'):
+            for node in pkg_deps_os.get('nodes'):
+                if node.get('relation') == 'DIRECT':
+                    c_relations['direct'] += 1
+                if node.get('relation') == 'INDIRECT':
+                    c_relations['indirect'] += 1
+            return c_relations
     
     def __get_relation_indirect(self, pkg_deps_os):
-        return self.__get_relations_deps(pkg_deps_os).get('indirect')
+        relations = self.__get_relations_deps(pkg_deps_os)
+        if relations:
+            return relations.get('indirect')
+        else:
+            return 0
 
     def __get_relation_direct(self, pkg_deps_os):
-        return self.__get_relations_deps(pkg_deps_os).get('direct')
+        relations = self.__get_relations_deps(pkg_deps_os)
+        if relations:
+            return relations.get('direct')
+        else:
+            return 0
 
+    def __get_vulnerabilities(self, pkg_version_info):
+        if pkg_version_info.get('advisoryKeys'):
+            return len(pkg_version_info.get('advisoryKeys'))
+        else:
+            return 0
 
     def process(self):
-        for comp in self.sbom.get('components'):
-            if comp.get('purl'):
-                model = {
-                    "pkg_name": None,
-                    "system": None,
-                    "recv_version": None,
-                    "latest": None,
-                    "dep_dir": None,
-                    "dep_indir": None
-                }
-                purl = PackageURL.from_string(comp.get('purl'))
-                if purl.namespace:
-                    pkg_name = f'{purl.namespace}/{purl.name}'
-                else:
-                    pkg_name = f'{purl.name}'
-                pkg_info = self.osi.GetPackage(purl.type, pkg_name)
-                pkg_deps = self.osi.GetDependencies(purl.type, pkg_name, purl.version)
-                model['pkg_name'] = pkg_name
-                model['system'] = purl.type
-                model['recv_version'] = purl.version
-                model['latest'] = self.__get_latest_version(pkg_info)
-                model['dep_dir'] = self.__get_relation_direct(pkg_deps)
-                model['dep_indir'] = self.__get_relation_indirect(pkg_deps)
+        with Progress() as progress:
+            task = progress.add_task("[green bold]Processing...", total=len(self.sbom.get('components')))
+            # while not progress.finished:
+            for comp in self.sbom.get('components'):
+                if comp.get('purl'):
+                    model = {
+                        "pkg_name": None,
+                        "system": None,
+                        "recv_version": None,
+                        "latest": None,
+                        "publishedAt": None,
+                        "dep_dir": None,
+                        "dep_indir": None,
+                        "vulnerabilities": None,
+                        "openssf_score": None,
+                        "maintained": None
+                    }
+                    purl = PackageURL.from_string(comp.get('purl'))
+                    if purl.namespace:
+                        pkg_name = f'{purl.namespace}/{purl.name}'
+                    else:
+                        pkg_name = f'{purl.name}'
+                    pkg_info = self.osi.GetPackage(purl.type, pkg_name)
+                    pkg_version = self.osi.GetVersion(purl.type, pkg_name, purl.version)
+                    pkg_deps = self.osi.GetDependencies(purl.type, pkg_name, purl.version)
+                    model['pkg_name'] = pkg_name
+                    model['system'] = purl.type
+                    model['recv_version'] = purl.version
+                    model['latest'] = self.__get_latest_version(pkg_info)
+                    model['publishedAt'] = self.__get_latest_version_date(pkg_info)
+                    model['dep_dir'] = self.__get_relation_direct(pkg_deps)
+                    model['dep_indir'] = self.__get_relation_indirect(pkg_deps)
+                    model['vulnerabilities'] = self.__get_vulnerabilities(pkg_version)
+                    model['openssf_score'] = self.__get_osscore(pkg_version)
+                    model['maintained'] = self.__get_score_maintained(pkg_version)
 
-                self.all_pkgs_info.append(model)
-
+                    progress.update(task, advance=1, description=f"[green bold]Processing: [bold blue]{purl.to_string()}")
+                    self.all_pkgs_info.append(model)
 def cli():
     ARGS = args()
     if ARGS.file:
+        console = Console()
         file_path = ARGS.file
         with open(file_path, 'r') as file:
             sbom = json.loads(file.read())
 
         sbom_process = Sbom_Process_CLI(sbom_json=sbom)
-        threading.Thread(target=sbom_process.process).start()
-        with Live(sbom_process.generate_table(), refresh_per_second=4) as live:
-            while True:
-                time.sleep(0.4)
-                live.update(sbom_process.generate_table())
-                if threading.active_count() == 2:
-                    break
-        exit(0)
+        sbom_process.process()
+        console.print(sbom_process.generate_table())
     else:
         print('Please --help')
 
