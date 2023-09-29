@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "open-source-insights-api"
-version = "0.1.12"
+version = "0.1.13"
 license = "MIT"
 description = "Library to consume project Open Source Insights Project from Google"
 authors = ["Cristiano Henrique <cristianovisk@gmail.com>"]

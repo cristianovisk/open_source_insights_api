@@ -1,7 +1,7 @@
 import argparse
 import json
 import time
-from os_insights import query
+from open_source_insights_api.os_insights import query
 from functools import cache
 from rich.live import Live
 from rich.table import Table
@@ -40,16 +40,10 @@ class Sbom_Process_CLI:
                 f"{pkg.get('dep_dir')}",
                 f"{pkg.get('dep_indir')}"
             )
-        # for row in range(random.randint(2, 6)):
-        #     value = random.random() * 100
-        #     table.add_row(
-        #         f"{row}", f"{value:3.2f}", "[red]ERROR" if value < 50 else "[green]SUCCESS"
-        #     )
         return table
     
 
     def __get_latest_version(self, pkg_info_os):
-        # print(pkg_info_os)
         for version in pkg_info_os.get('versions'):
             if version.get('isDefault'):
                 return version.get('versionKey').get('version')
@@ -87,9 +81,7 @@ class Sbom_Process_CLI:
                 else:
                     pkg_name = f'{purl.name}'
                 pkg_info = self.osi.GetPackage(purl.type, pkg_name)
-                # pkg_version_info = self.osi.GetVersion(purl.type, pkg_name, purl.version)
                 pkg_deps = self.osi.GetDependencies(purl.type, pkg_name, purl.version)
-                # print(pkg_info)
                 model['pkg_name'] = pkg_name
                 model['system'] = purl.type
                 model['recv_version'] = purl.version
@@ -120,11 +112,3 @@ def cli():
 
 if __name__ == "__main__":
     cli()
-    
-    
-    # info = query().GetPackage('pypi', 'anyio')
-    
-    # print(sbom_process.get_latest_version(pkg_info_os=info))
-    # sbom_process.process()
-    
-    
