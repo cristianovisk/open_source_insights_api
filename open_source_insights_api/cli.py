@@ -17,6 +17,7 @@ from packageurl import PackageURL
 def args():
     parser = argparse.ArgumentParser(description="SBOM Insights")
     parser.add_argument("-f", "--file", type=str, const=True, nargs='?', default='sbom.json', help="Define sbom.json to consume e return insights. (Default is sbom.json)")
+    parser.add_argument("-o", "--output", type=str, const=True, nargs='?', default='output.json', help="Output JSON to file, NEED --json to works! (Default is output.json)")
     parser.add_argument("-j", "--json", action="store_true", help="Print output as JSON instead of a table.")
     parser.add_argument("-v", "--version", action="store_true", help="Show version.")
     arguments = parser.parse_args()
@@ -267,6 +268,8 @@ def cli():
 
         if ARGS.json:
             console.print(json.dumps(sbom_process.all_pkgs_info, indent=4))
+            with open(ARGS.output, 'w') as file:
+                file.write(json.dumps(sbom_process.all_pkgs_info, indent=4))
         else:
             console.print(sbom_process.generate_table())
     else:
