@@ -94,7 +94,7 @@ class Sbom_Process_CLI:
     
     def __get_osscore(self, pkg_version_info):
         repo_url = ""
-        score = ""
+        score = None
         regex_github = '(github.com\/[a-zA-Z0-9\-]{2,}\/[a-zA-Z0-9\-]{2,})'
         if pkg_version_info.get('links'):
             if len(pkg_version_info.get('links')) == 0:
@@ -115,7 +115,7 @@ class Sbom_Process_CLI:
     
     def __get_score_maintained(self, pkg_version_info):
         repo_url = ""
-        score = ""
+        score = None
         regex_github = '(github.com\/[a-zA-Z0-9\-]{2,}\/[a-zA-Z0-9\-]{2,})'
         if pkg_version_info.get('links'):
             if len(pkg_version_info.get('links')) == 0:
@@ -132,7 +132,7 @@ class Sbom_Process_CLI:
             if project_data.get('scorecard'):
                 for check in project_data.get('scorecard').get('checks'):
                     if check.get('name') == "Maintained":
-                        score = check.get('score')
+                        score = float(check.get('score'))
 
         return score
             
