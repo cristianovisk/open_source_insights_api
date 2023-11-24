@@ -1,7 +1,7 @@
 import argparse
 import json
 import time
-from os_insights import query
+from open_source_insights_api.os_insights import query
 from rich.table import Table
 from rich.progress import Progress
 from rich.console import Console
