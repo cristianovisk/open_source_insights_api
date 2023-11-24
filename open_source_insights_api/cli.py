@@ -41,11 +41,13 @@ class Sbom_Process_CLI:
         table.add_column(":skull: Vulnerabilities")
         table.add_column(":light_bulb: OpenSSF Score")
         table.add_column(":hammer_and_wrench: Maintainability")
+        table.add_column(":credit_card: License")
        
         for pkg in self.all_pkgs_info:
             dep_dir = f"{pkg.get('dep_indir')}"
             dep_indir = f"{pkg.get('dep_dir')}"
             maintained = ""
+            license = f"{pkg.get('license')}"
             if pkg.get('recv_version') != pkg.get('latest'): 
                 latest = f":new: {pkg.get('latest')}"
             else:
@@ -92,7 +94,8 @@ class Sbom_Process_CLI:
                 f"{dep_indir}",
                 f"{vulnerabilities}",
                 f"{pkg.get('openssf_score')}",
-                f"{maintained}"
+                f"{maintained}",
+                f"{license}"
             )
         pd.DataFrame(self.all_pkgs_info).to_excel('output.xlsx', sheet_name="SBOM_INSIGHTS", index=False, header=True)
         return table
@@ -178,6 +181,28 @@ class Sbom_Process_CLI:
         else:
             return 0
 
+    def __get_license(self, pkg_version_info):
+        if pkg_version_info.get('licenses') != None and len(pkg_version_info.get('licenses')) > 0:
+            return pkg_version_info.get('licenses')[0]
+        else:
+            repo_url = ""
+            score = None
+            regex_github = '(github.com\/[a-zA-Z0-9\-\_]{2,}\/[a-zA-Z0-9\-\_]{2,})'
+            if pkg_version_info.get('links'):
+                if len(pkg_version_info.get('links')) == 0:
+                    return ""
+                else:
+                    for link in pkg_version_info.get('links'):
+                        if link.get('label') == 'SOURCE_REPO':
+                            try:
+                                repo_url = re.search(regex_github, link.get('url'))[0]
+                            except:
+                                repo_url = ""
+            if repo_url != "":
+                project_data = self.osi.GetProject(repo_url)
+                if project_data.get('license'):
+                    return project_data.get('license')
+        
     def __get_vulnerabilities(self, pkg_version_info):
         if pkg_version_info.get('advisoryKeys'):
             return len(pkg_version_info.get('advisoryKeys'))
@@ -200,7 +225,8 @@ class Sbom_Process_CLI:
                         "dep_indir": None,
                         "vulnerabilities": None,
                         "openssf_score": None,
-                        "maintained": None
+                        "maintained": None,
+                        "license": None
                     }
                     purl = PackageURL.from_string(comp.get('purl'))
                     if purl.namespace:
@@ -220,6 +246,7 @@ class Sbom_Process_CLI:
                     model['vulnerabilities'] = self.__get_vulnerabilities(pkg_version)
                     model['openssf_score'] = self.__get_osscore(pkg_version)
                     model['maintained'] = self.__get_score_maintained(pkg_version)
+                    model['license'] = self.__get_license(pkg_version)
 
                     progress.update(task, advance=1, description=f"[green bold]Processing: [bold blue]{purl.to_string()}")
                     self.all_pkgs_info.append(model)
