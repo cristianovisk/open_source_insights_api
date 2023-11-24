@@ -5,6 +5,10 @@ from os_insights import query
 from rich.table import Table
 from rich.progress import Progress
 from rich.console import Console
+try:
+    from open_source_insights_api import __version__
+except:
+    from __init__ import __version__
 import pandas as pd
 import re
 import threading
@@ -14,6 +18,7 @@ def args():
     parser = argparse.ArgumentParser(description="SBOM Insights")
     parser.add_argument("-f", "--file", type=str, const=True, nargs='?', default='sbom.json', help="Define sbom.json to consume e return insights. (Default is sbom.json)")
     parser.add_argument("-j", "--json", action="store_true", help="Print output as JSON instead of a table.")
+    parser.add_argument("-v", "--version", action="store_true", help="Show version.")
     arguments = parser.parse_args()
     return arguments
 
@@ -50,7 +55,7 @@ class Sbom_Process_CLI:
             else:
                 vulnerabilities = f":green_circle: {pkg.get('vulnerabilities')}"
 
-            if pkg.get('maintained') != "":
+            if pkg.get('maintained') != None:
                 if int(pkg.get('maintained')) == 0:
                     maintained = f":red_circle: {pkg.get('maintained')}"
                 elif int(pkg.get('maintained')) < 5:
@@ -95,7 +100,7 @@ class Sbom_Process_CLI:
     def __get_osscore(self, pkg_version_info):
         repo_url = ""
         score = None
-        regex_github = '(github.com\/[a-zA-Z0-9\-]{2,}\/[a-zA-Z0-9\-]{2,})'
+        regex_github = '(github.com\/[a-zA-Z0-9\-\_]{2,}\/[a-zA-Z0-9\-\_]{2,})'
         if pkg_version_info.get('links'):
             if len(pkg_version_info.get('links')) == 0:
                 return ""
@@ -116,7 +121,7 @@ class Sbom_Process_CLI:
     def __get_score_maintained(self, pkg_version_info):
         repo_url = ""
         score = None
-        regex_github = '(github.com\/[a-zA-Z0-9\-]{2,}\/[a-zA-Z0-9\-]{2,})'
+        regex_github = '(github.com\/[a-zA-Z0-9\-\_]{2,}\/[a-zA-Z0-9\-\_]{2,})'
         if pkg_version_info.get('links'):
             if len(pkg_version_info.get('links')) == 0:
                 return ""
@@ -220,8 +225,12 @@ class Sbom_Process_CLI:
                     self.all_pkgs_info.append(model)
 def cli():
     ARGS = args()
+    console = Console()
+    if ARGS.version:
+        console.print(f'Current version: {__version__}')
+        exit(0)
+        
     if ARGS.file:
-        console = Console()
         file_path = ARGS.file
         with open(file_path, 'r') as file:
             sbom = json.loads(file.read())

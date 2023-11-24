@@ -168,7 +168,7 @@ class query:
         if self.__CheckSupportedRepo(repo):
             repo = urllib.parse.quote_plus(repo)
             
-            url = f'https://api.deps.dev/v3alpha/projects/{repo}'
+            url = f'https://api.deps.dev/v3alpha/projects/{repo.lower()}'
 
             try:
                 r = requests.get(url)
