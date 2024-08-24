@@ -1,0 +1,26 @@
+{
+  "version": "2.2.0",
+  "summary": {
+    "title": "Front to Back - Login Page",
+    "owner": "Cristiano",
+    "description": "Estou fazendo TM do processo de comunicação entre o front end da aplicação X com seu backend especificamente no método de validação de LOGIN",
+    "id": 0
+  },
+  "detail": {
+    "contributors": [],
+    "diagrams": [
+      {
+        "id": 0,
+        "title": "Login",
+        "diagramType": "STRIDE",
+        "placeholder": "New STRIDE diagram description",
+        "thumbnail": "./public/content/images/thumbnail.stride.jpg",
+        "version": "2.2.0",
+        "cells": []
+      }
+    ],
+    "diagramTop": 1,
+    "reviewer": "",
+    "threatTop": 0
+  }
+}
